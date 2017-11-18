@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css?family=Cabin');
+
+body {
+  font-family: Cabin, sans-serif;
+  background-color: #FDE3A7;
+}
+
+.container {
+  padding: 30px;
+}
+
+.green {
+  color: #1E824C;
+  font-weight: bold;
+}
+
+.markdown-container {
+  padding: 30px;
+}
+
+.display-container {
+  padding: 30px;
+}
+
+.section-header {
+  padding-bottom: 30px;
+  font-weight: bold;
+  color: #1E824C;
+}
+
+textarea {
+  font-size: 12px;
+  width: 100%;
+  height: auto;
+  padding: 10px;
+  resize: vertical;
+  border: 1px solid #66CC99;
+  border-radius: 5px;
+}
+
+textarea:focus {
+  outline: none;
+  border: 1px solid #1E824C;
+}

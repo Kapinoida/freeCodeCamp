@@ -1,0 +1,139 @@
+$(document).ready(function() {
+  
+  // A way to ge the top row to stay at the top of screen when scrolling to help with titles
+  $(window).scroll(function() {
+    
+    // So the size of the header is at 300px, so if we scroll below that, the top row will stick to the top of the screen. It will remove that if it goes back.
+    if ($(window).scrollTop() > 300) {
+      $(".top-row").addClass("top-row-scroll");
+    }
+    else {
+      $(".top-row").removeClass('top-row-scroll');
+    }
+  });
+  
+  // Destination variable for the render
+  var destination = document.querySelector(".container");
+  
+  // This is the header, just creates the render for the content
+  var Header = React.createClass({
+    render: function() {
+      return (
+        <div className="header text-center">
+          <h1>freeCodeCamp leaderBoard</h1>
+          <p>These campers are much better than the guy who coded this.</p>
+        </div>
+      );
+    }
+  });
+  
+  // This is the top row stuff. Just renders the row. On the two selections, we have a click event to change the choice. I just did it so it would switch no matter what on either selection.
+  var TopRow = React.createClass({
+    render: function() {
+      return (
+        <div>
+          <div className="row top-row container">
+            <div className="col-1 text-center">
+              #
+            </div>
+            <div className="col-5 text-center">
+              camperName
+            </div>
+            <div className="col-3 text-center thirty" onClick={this.props.changeChoice}>
+              <p>pastThirtyDays</p>
+            </div>
+            <div className="col-3 text-center alltime" onClick={this.props.changeChoice}>
+              <p>allTime</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  });
+  
+  // This is the row constructor. We use the props to build the rows for each instance of the top 100 peeps.
+  var Row = React.createClass({
+    render: function() {
+      return (
+        <div>
+          <div className="row camper-row">
+            <div className="col-1 text-center">
+              {this.props.index}
+            </div>
+            <div className="col-5 text-center">
+              <a href={"https://www.freecodecamp.com/" + this.props.name} target="_blank">{this.props.name}</a>
+            </div>
+            <div className="col-3 text-center">
+              {this.props.month}
+            </div>
+            <div className="col-3 text-center">
+              {this.props.total}
+            </div>
+          </div>
+        </div>
+      );
+    }
+  });
+  
+  // This what makes the list of people. We use the map method to interate through the array of the API we get. It then returns the row with the information in place.
+  var List = React.createClass({
+    render: function() {
+      var camperlist = this.props.camperlist.map(function(item, index) {
+        return <Row name={item.username} month={item.recent} total={item.alltime} index={index + 1}/>
+      });
+      return (
+        <div>
+          {camperlist}
+        </div>
+      );
+    }
+  });
+  
+  // This is the big guy that does the heavy lifting.
+  var Leaderboard = React.createClass({
+    
+    // We first initialize the list options. We set each choice to empty and the choice to thirty
+    getInitialState: function() {
+      return {
+        camperthirty: [],
+        camperall: [],
+        choice: "thirty"
+      };
+    },
+    
+    // We call the APIs on mounting, setting the properties to the proper content.
+    componentDidMount: function() {
+      $.getJSON("https://fcctop100.herokuapp.com/api/fccusers/top/recent", function(response) {
+        this.setState({camperthirty: response})
+      }.bind(this));
+      $.getJSON("https://fcctop100.herokuapp.com/api/fccusers/top/alltime", function(response) {
+        this.setState({camperall: response})
+      }.bind(this));
+    },
+    
+    // This is the function when we click the options. We make a new choice that is opposite of the choice that is current;y there. First time using the if-else thing,
+    changeChoice: function() {
+      var newChoice = (this.state.choice == "thirty") ? "all" : "thirty";
+      this.setState({choice: newChoice});
+    },
+    
+    // We then render by calling and setting the variables and stuff. We use the if-else to change state.
+    render: function() {
+      return (
+        <div>
+          <Header/>
+          <TopRow choice={this.state.choice} changeChoice={this.changeChoice}/>
+          <List camperlist={(this.state.choice === "thirty") ? this.state.camperthirty : this.state.camperall}/>
+        </div>
+      );
+    }
+  });
+  
+  // Hey there stuff. please render.
+  ReactDOM.render(
+    <div>
+      <Leaderboard/>
+    </div>,
+    destination
+  );
+});

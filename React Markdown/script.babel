@@ -1,0 +1,57 @@
+// This is reconstructed from the example given, with some other changes as well. Was fun learning React and being able to apply it to my first project
+
+// This is the destination of the ReactDOM render call.
+var destination = document.querySelector(".container");
+
+// Here is the big guy, lots involved in this one variable, but I will explain it
+var TheStuff = React.createClass({
+  // This is the updater for the Input section. when there is a change in the textarea, it will call up this method and change the output area.
+  updateValue: function(valueChange) {
+    this.setState({
+      value: this.refs.inputValue.value
+    })
+  },
+  // This is the setup for the Input Area. When the page is first loaded, it will use this state, then update the state if there is input.
+  getInitialState: function() {
+    return{
+      value: "Heading\n=======\n\nSub-heading\n-----------\n \n### Another deeper heading\n \nParagraphs are separated\nby a blank line.\n\nLeave 2 spaces at the end of a line to do a  \nline break\n\nText attributes *italic*, **bold**, \n`monospace`, ~~strikethrough~~ .\n\nShopping list:\n\n  * apples\n  * oranges\n  * pears\n\nNumbered list:\n\n  1. apples\n  2. oranges\n  3. pears\n\nThe rain---not the reign---in\nSpain.\n\n *[Herman Fassett](https://freecodecamp.com/hermanfassett)*"
+    }
+  },
+  // This is the translator for the Output area. I grabbed it from the original example, as it used the marked library.
+  rawMarkup: function(value) {
+    var rawMarkup = marked(value, {sanitize: true});
+    return { 
+      __html: rawMarkup 
+    };
+  },
+  // This render handles pretty much the rest of the things displayed. The text area will have a default value to start with, then as more input is added, the vlaues will change. The Markup will take care of the display area for us.
+  render: function() {
+    return (
+      <div>
+        <h1 className="text-center"><span className="green">freeCodeCamp</span> React Markdown Previewer</h1>
+        <div className="row">
+          <div className="markdown-container col-md-6">
+            <h1 className="text-center section-header">Input</h1>
+            <textarea 
+              rows="30"
+              type="text" 
+              value={this.state.value} 
+              onChange={this.updateValue} 
+              ref="inputValue" 
+              />
+          </div>
+          <div className="display-container col-md-6">
+            <h1 className="text-center section-header">Output</h1>
+            <div dangerouslySetInnerHTML={this.rawMarkup(this.state.value)}/>
+          </div>
+        </div>
+      </div>
+    );
+  }
+});
+
+// This is how we see all the things.
+ReactDOM.render(
+  <TheStuff/>,
+  destination
+);
